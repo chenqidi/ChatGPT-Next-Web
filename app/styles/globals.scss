@@ -1,48 +1,44 @@
 @import "./animation.scss";
 @import "./window.scss";
 
+
 @mixin light {
   --theme: light;
-
-  /* color */
-  --white: white;
-  --black: rgb(48, 48, 48);
-  --gray: rgb(250, 250, 250);
-  --primary: rgb(29, 147, 171);
-  --second: rgb(231, 248, 255);
-  --hover-color: #f3f3f3;
-  --bar-color: rgba(0, 0, 0, 0.1);
-  --theme-color: var(--gray);
-
-  /* shadow */
-  --shadow: 50px 50px 100px 10px rgb(0, 0, 0, 0.1);
-  --card-shadow: 0px 2px 4px 0px rgb(0, 0, 0, 0.05);
-
-  /* stroke */
-  --border-in-light: 1px solid rgb(222, 222, 222);
+  /* 高贵紫色主题 - 专业版 */
+  --white: #f8f8fa;     // 柔和的灰白背景
+  --black: #333333;     // 深灰色文字，提高可读性
+  --gray: #f0f0f5;      // 更柔和的中性灰
+  --primary: #8a2be2;   // 保留原深紫罗兰色
+  --second: #e6e6fa;    // 柔和的丁香紫
+  --hover-color: #f3f3f8; // 轻微的灰蓝悬停色
+  --bar-color: rgba(138, 43, 226, 0.05); // 极淡的紫色
+  --theme-color: var(--white);
+  /* 优雅的阴影 */
+  --shadow: 30px 30px 60px 5px rgba(138, 43, 226, 0.08);
+  --card-shadow: 0px 2px 4px 0px rgba(138, 43, 226, 0.06);
+  /* 精致的边框 */
+  --border-in-light: 1px solid rgba(138, 43, 226, 0.1);
 }
+
 
 @mixin dark {
   --theme: dark;
-
-  /* color */
-  --white: rgb(30, 30, 30);
-  --black: rgb(187, 187, 187);
-  --gray: rgb(21, 21, 21);
-  --primary: rgb(29, 147, 171);
-  --second: rgb(27 38 42);
-  --hover-color: #323232;
-
-  --bar-color: rgba(255, 255, 255, 0.1);
-
-  --border-in-light: 1px solid rgba(255, 255, 255, 0.192);
-
+  /* 精致暗金主题 - 层次优化版 */
+  --white: #121212;     // 更深沉的底色
+  --black: #f0e6d2;     // 暖金色文字
+  --gray: #252525;      // 聊天框背景，略深
+  --primary: #d4af37;   // 金色保持不变
+  --second: #1e1e1e;    // 侧边栏背景，略浅
+  --hover-color: #353535; // 悬停色
+  --bar-color: rgba(212, 175, 55, 0.3); // 金色半透明
+  --border-in-light: 1px solid rgba(212, 175, 55, 0.4);
   --theme-color: var(--gray);
-
   div:not(.no-dark) > svg {
-    filter: invert(0.5);
+    filter: invert(0.7) brightness(0.9);
   }
 }
+
+
 
 .light {
   @include light;
