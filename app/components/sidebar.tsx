@@ -1,16 +1,15 @@
-import React, { useEffect, useRef, useMemo, useState, Fragment } from "react";
+import React, { Fragment, useEffect, useMemo, useRef, useState } from "react";
 
 import styles from "./home.module.scss";
 
-import { IconButton } from "./button";
-import SettingsIcon from "../icons/settings.svg";
-import GithubIcon from "../icons/github.svg";
-import ChatGptIcon from "../icons/chatgpt.svg";
 import AddIcon from "../icons/add.svg";
 import DeleteIcon from "../icons/delete.svg";
-import MaskIcon from "../icons/mask.svg";
-import DragIcon from "../icons/drag.svg";
 import DiscoveryIcon from "../icons/discovery.svg";
+import DragIcon from "../icons/drag.svg";
+import GithubIcon from "../icons/github.svg";
+import MaskIcon from "../icons/mask.svg";
+import SettingsIcon from "../icons/settings.svg";
+import { IconButton } from "./button";
 
 import Locale from "../locales";
 
@@ -26,11 +25,11 @@ import {
   REPO_URL,
 } from "../constant";
 
+import clsx from "clsx";
+import dynamic from "next/dynamic";
 import { Link, useNavigate } from "react-router-dom";
 import { isIOS, useMobileScreen } from "../utils";
-import dynamic from "next/dynamic";
-import { showConfirm, Selector } from "./ui-lib";
-import clsx from "clsx";
+import { Selector, showConfirm } from "./ui-lib";
 
 const ChatList = dynamic(async () => (await import("./chat-list")).ChatList, {
   loading: () => null,
@@ -231,9 +230,9 @@ export function SideBar(props: { className?: string }) {
       {...props}
     >
       <SideBarHeader
-        title="NextChat"
-        subTitle="Build your own AI assistant."
-        logo={<ChatGptIcon />}
+        title="NextChat (′▽`〃)"
+        subTitle="Build your own AI assistant, go go go."
+        // logo={<ChatGptIcon />}
         shouldNarrow={shouldNarrow}
       >
         <div className={styles["sidebar-header-bar"]}>
