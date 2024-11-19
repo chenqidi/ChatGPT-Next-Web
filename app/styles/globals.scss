@@ -4,22 +4,21 @@
 
 @mixin light {
   --theme: light;
-  /* 高贵紫色主题 - 专业版 */
-  --white: #f8f8fa;     // 柔和的灰白背景
-  --black: #333333;     // 深灰色文字，提高可读性
-  --gray: #f0f0f5;      // 更柔和的中性灰
-  --primary: #8a2be2;   // 保留原深紫罗兰色
-  --second: #e6e6fa;    // 柔和的丁香紫
-  --hover-color: #f3f3f8; // 轻微的灰蓝悬停色
-  --bar-color: rgba(138, 43, 226, 0.05); // 极淡的紫色
+  /* 低调奢华VIP紫色主题 */
+  --white: #f4f4f8;     // 柔和的灰白，带着高级灰的质感
+  --black: #2c2c2c;     // 极其柔和的墨黑
+  --gray: #f0f0f4;      // 高级灰，质感细腻
+  --primary: #6a5acd;   // 成熟稳重的柔和紫罗兰
+  --second: #e4e4f0;    // 极其柔和的薰衣草灰
+  --hover-color: #f2f2f6; // 细腻的紫灰色
+  --bar-color: rgba(106, 90, 205, 0.03); // 极其微妙的紫色
   --theme-color: var(--white);
-  /* 优雅的阴影 */
-  --shadow: 30px 30px 60px 5px rgba(138, 43, 226, 0.08);
-  --card-shadow: 0px 2px 4px 0px rgba(138, 43, 226, 0.06);
-  /* 精致的边框 */
-  --border-in-light: 1px solid rgba(138, 43, 226, 0.1);
+  /* 优雅的丝绸般阴影 */
+  --shadow: 25px 25px 50px 4px rgba(106, 90, 205, 0.05);
+  --card-shadow: 0px 2px 3px 0px rgba(106, 90, 205, 0.04);
+  /* 优雅的极细边框 */
+  --border-in-light: 1px solid rgba(106, 90, 205, 0.06);
 }
-
 
 @mixin dark {
   --theme: dark;
