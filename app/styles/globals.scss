@@ -6,7 +6,7 @@
   --theme: light;
   /* 低调奢华VIP紫色主题 */
   --white: #f4f4f8;     // 柔和的灰白，带着高级灰的质感
-  --black: #2c2c2c;     // 极其柔和的墨黑
+  --black: #242424;     // 极其柔和的墨黑
   --gray: #f0f0f4;      // 高级灰，质感细腻
   --primary: #6a5acd;   // 成熟稳重的柔和紫罗兰
   --second: #e4e4f0;    // 极其柔和的薰衣草灰
@@ -22,13 +22,12 @@
 
 @mixin dark {
   --theme: dark;
-  /* 精致暗金主题 - 层次优化版 */
   --white: #121212;     // 更深沉的底色
-  --black: #f0e6d2;     // 暖金色文字
+  --black: #d4af37;     // 金色文字
   --gray: #252525;      // 聊天框背景，略深
   --primary: #d4af37;   // 金色保持不变
   --second: #1e1e1e;    // 侧边栏背景，略浅
-  --hover-color: #353535; // 悬停色
+  --hover-color: #353535; // 中灰色悬停色
   --bar-color: rgba(212, 175, 55, 0.3); // 金色半透明
   --border-in-light: 1px solid rgba(212, 175, 55, 0.4);
   --theme-color: var(--gray);
@@ -36,8 +35,6 @@
     filter: invert(0.7) brightness(0.9);
   }
 }
-
-
 
 .light {
   @include light;
