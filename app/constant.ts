@@ -319,6 +319,9 @@ const googleModels = [
   "gemini-1.5-pro-latest",
   "gemini-1.5-flash-latest",
   "gemini-pro-vision",
+  "gemini-exp-1121",
+  "gemini-exp-1114",
+  "learnlm-1.5-pro-experimental",
 ];
 
 const anthropicModels = [
