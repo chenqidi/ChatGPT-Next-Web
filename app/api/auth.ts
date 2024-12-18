@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
-import { getServerSideConfig } from "../config/server";
 import md5 from "spark-md5";
+import { getServerSideConfig } from "../config/server";
 import { ACCESS_CODE_PREFIX, ModelProvider } from "../constant";
 
 function getIP(req: NextRequest) {
@@ -97,6 +97,9 @@ export function auth(req: NextRequest, modelProvider: ModelProvider) {
         break;
       case ModelProvider.ChatGLM:
         systemApiKey = serverConfig.chatglmApiKey;
+        break;
+      case ModelProvider.DeepSeek:
+        systemApiKey = serverConfig.deepseekApiKey;
         break;
       case ModelProvider.GPT:
       default:

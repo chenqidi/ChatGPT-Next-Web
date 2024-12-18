@@ -1,18 +1,19 @@
 import { ApiPath } from "@/app/constant";
 import { NextRequest } from "next/server";
-import { handle as openaiHandler } from "../../openai";
-import { handle as azureHandler } from "../../azure";
-import { handle as googleHandler } from "../../google";
+import { handle as alibabaHandler } from "../../alibaba";
 import { handle as anthropicHandler } from "../../anthropic";
+import { handle as azureHandler } from "../../azure";
 import { handle as baiduHandler } from "../../baidu";
 import { handle as bytedanceHandler } from "../../bytedance";
-import { handle as alibabaHandler } from "../../alibaba";
-import { handle as moonshotHandler } from "../../moonshot";
-import { handle as stabilityHandler } from "../../stability";
-import { handle as iflytekHandler } from "../../iflytek";
-import { handle as xaiHandler } from "../../xai";
+import { handle as deepseekHandler } from "../../deepseek";
 import { handle as chatglmHandler } from "../../glm";
+import { handle as googleHandler } from "../../google";
+import { handle as iflytekHandler } from "../../iflytek";
+import { handle as moonshotHandler } from "../../moonshot";
+import { handle as openaiHandler } from "../../openai";
 import { handle as proxyHandler } from "../../proxy";
+import { handle as stabilityHandler } from "../../stability";
+import { handle as xaiHandler } from "../../xai";
 
 async function handle(
   req: NextRequest,
@@ -44,6 +45,8 @@ async function handle(
       return xaiHandler(req, { params });
     case ApiPath.ChatGLM:
       return chatglmHandler(req, { params });
+    case ApiPath.DeepSeek:
+      return deepseekHandler(req, { params });
     case ApiPath.OpenAI:
       return openaiHandler(req, { params });
     default:

@@ -5,23 +5,24 @@ import {
   ServiceProvider,
 } from "../constant";
 import {
-  ChatMessageTool,
   ChatMessage,
+  ChatMessageTool,
   ModelType,
   useAccessStore,
   useChatStore,
 } from "../store";
-import { ChatGPTApi, DalleRequestPayload } from "./platforms/openai";
-import { GeminiProApi } from "./platforms/google";
+import { QwenApi } from "./platforms/alibaba";
 import { ClaudeApi } from "./platforms/anthropic";
 import { ErnieApi } from "./platforms/baidu";
 import { DoubaoApi } from "./platforms/bytedance";
-import { QwenApi } from "./platforms/alibaba";
-import { HunyuanApi } from "./platforms/tencent";
-import { MoonshotApi } from "./platforms/moonshot";
-import { SparkApi } from "./platforms/iflytek";
-import { XAIApi } from "./platforms/xai";
+import { DeepSeekApi } from "./platforms/deepseek";
 import { ChatGLMApi } from "./platforms/glm";
+import { GeminiProApi } from "./platforms/google";
+import { SparkApi } from "./platforms/iflytek";
+import { MoonshotApi } from "./platforms/moonshot";
+import { ChatGPTApi, DalleRequestPayload } from "./platforms/openai";
+import { HunyuanApi } from "./platforms/tencent";
+import { XAIApi } from "./platforms/xai";
 
 export const ROLES = ["system", "user", "assistant"] as const;
 export type MessageRole = (typeof ROLES)[number];
@@ -160,6 +161,9 @@ export class ClientApi {
       case ModelProvider.ChatGLM:
         this.llm = new ChatGLMApi();
         break;
+      case ModelProvider.DeepSeek:
+        this.llm = new DeepSeekApi();
+        break;
       default:
         this.llm = new ChatGPTApi();
     }
@@ -249,6 +253,7 @@ export function getHeaders(ignoreHeaders: boolean = false) {
     const isIflytek = modelConfig.providerName === ServiceProvider.Iflytek;
     const isXAI = modelConfig.providerName === ServiceProvider.XAI;
     const isChatGLM = modelConfig.providerName === ServiceProvider.ChatGLM;
+    const isDeepSeek = modelConfig.providerName === ServiceProvider.DeepSeek;
     const isEnabledAccessControl = accessStore.enabledAccessControl();
     const apiKey = isGoogle
       ? accessStore.googleApiKey
@@ -266,6 +271,8 @@ export function getHeaders(ignoreHeaders: boolean = false) {
       ? accessStore.xaiApiKey
       : isChatGLM
       ? accessStore.chatglmApiKey
+      : isDeepSeek
+      ? accessStore.deepseekApiKey
       : isIflytek
       ? accessStore.iflytekApiKey && accessStore.iflytekApiSecret
         ? accessStore.iflytekApiKey + ":" + accessStore.iflytekApiSecret
@@ -282,6 +289,7 @@ export function getHeaders(ignoreHeaders: boolean = false) {
       isIflytek,
       isXAI,
       isChatGLM,
+      isDeepSeek,
       apiKey,
       isEnabledAccessControl,
     };
@@ -348,6 +356,8 @@ export function getClientApi(provider: ServiceProvider): ClientApi {
       return new ClientApi(ModelProvider.XAI);
     case ServiceProvider.ChatGLM:
       return new ClientApi(ModelProvider.ChatGLM);
+    case ServiceProvider.DeepSeek:
+      return new ClientApi(ModelProvider.DeepSeek);
     default:
       return new ClientApi(ModelProvider.GPT);
   }

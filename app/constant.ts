@@ -32,6 +32,8 @@ export const XAI_BASE_URL = "https://api.x.ai";
 
 export const CHATGLM_BASE_URL = "https://open.bigmodel.cn";
 
+export const DEEPSEEK_BASE_URL = "https://api.deepseek.com";
+
 export const CACHE_URL_PREFIX = "/api/cache";
 export const UPLOAD_URL = `${CACHE_URL_PREFIX}/upload`;
 
@@ -65,6 +67,7 @@ export enum ApiPath {
   Artifacts = "/api/artifacts",
   XAI = "/api/xai",
   ChatGLM = "/api/chatglm",
+  DeepSeek = "/api/deepseek",
 }
 
 export enum SlotID {
@@ -119,6 +122,7 @@ export enum ServiceProvider {
   Iflytek = "Iflytek",
   XAI = "XAI",
   ChatGLM = "ChatGLM",
+  DeepSeek = "DeepSeek",
 }
 
 // Google API safety settings, see https://ai.google.dev/gemini-api/docs/safety-settings
@@ -143,6 +147,7 @@ export enum ModelProvider {
   Iflytek = "Iflytek",
   XAI = "XAI",
   ChatGLM = "ChatGLM",
+  DeepSeek = "DeepSeek",
 }
 
 export const Stability = {
@@ -233,6 +238,11 @@ export const XAI = {
 export const ChatGLM = {
   ExampleEndpoint: CHATGLM_BASE_URL,
   ChatPath: "api/paas/v4/chat/completions",
+};
+
+export const DeepSeek = {
+  ExampleEndpoint: DEEPSEEK_BASE_URL,
+  ChatPath: "v1/chat/completions",
 };
 
 export const DEFAULT_INPUT_TEMPLATE = `{{input}}`; // input / time / model / lang
@@ -406,6 +416,8 @@ const chatglmModels = [
   "glm-4-flash",
 ];
 
+const deepseekModels = ["deepseek-chat", "deepseek-coder"];
+
 let seq = 1000; // 内置的模型序号生成器从1000开始
 export const DEFAULT_MODELS = [
   ...openaiModels.map((name) => ({
@@ -538,6 +550,17 @@ export const DEFAULT_MODELS = [
       providerName: "ChatGLM",
       providerType: "chatglm",
       sorted: 12,
+    },
+  })),
+  ...deepseekModels.map((name) => ({
+    name,
+    available: true,
+    sorted: seq++,
+    provider: {
+      id: "deepseek",
+      providerName: "DeepSeek",
+      providerType: "deepseek",
+      sorted: 13,
     },
   })),
 ] as const;

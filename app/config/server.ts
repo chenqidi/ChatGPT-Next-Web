@@ -1,5 +1,5 @@
 import md5 from "spark-md5";
-import { DEFAULT_MODELS, DEFAULT_GA_ID } from "../constant";
+import { DEFAULT_GA_ID, DEFAULT_MODELS } from "../constant";
 
 declare global {
   namespace NodeJS {
@@ -79,6 +79,10 @@ declare global {
       CHATGLM_URL?: string;
       CHATGLM_API_KEY?: string;
 
+      // deepseek only
+      DEEPSEEK_URL?: string;
+      DEEPSEEK_API_KEY?: string;
+
       // custom template for preprocessing user input
       DEFAULT_INPUT_TEMPLATE?: string;
     }
@@ -156,6 +160,7 @@ export const getServerSideConfig = () => {
   const isIflytek = !!process.env.IFLYTEK_API_KEY;
   const isXAI = !!process.env.XAI_API_KEY;
   const isChatGLM = !!process.env.CHATGLM_API_KEY;
+  const isDeepSeek = !!process.env.DEEPSEEK_API_KEY;
   // const apiKeyEnvVar = process.env.OPENAI_API_KEY ?? "";
   // const apiKeys = apiKeyEnvVar.split(",").map((v) => v.trim());
   // const randomIndex = Math.floor(Math.random() * apiKeys.length);
@@ -225,6 +230,10 @@ export const getServerSideConfig = () => {
     isChatGLM,
     chatglmUrl: process.env.CHATGLM_URL,
     chatglmApiKey: getApiKey(process.env.CHATGLM_API_KEY),
+
+    isDeepSeek,
+    deepseekUrl: process.env.DEEPSEEK_URL,
+    deepseekApiKey: getApiKey(process.env.DEEPSEEK_API_KEY),
 
     cloudflareAccountId: process.env.CLOUDFLARE_ACCOUNT_ID,
     cloudflareKVNamespaceId: process.env.CLOUDFLARE_KV_NAMESPACE_ID,

@@ -1,27 +1,28 @@
-import {
-  GoogleSafetySettingsThreshold,
-  ServiceProvider,
-  StoreKey,
-  ApiPath,
-  OPENAI_BASE_URL,
-  ANTHROPIC_BASE_URL,
-  GEMINI_BASE_URL,
-  BAIDU_BASE_URL,
-  BYTEDANCE_BASE_URL,
-  ALIBABA_BASE_URL,
-  TENCENT_BASE_URL,
-  MOONSHOT_BASE_URL,
-  STABILITY_BASE_URL,
-  IFLYTEK_BASE_URL,
-  XAI_BASE_URL,
-  CHATGLM_BASE_URL,
-} from "../constant";
 import { getHeaders } from "../client/api";
 import { getClientConfig } from "../config/client";
-import { createPersistStore } from "../utils/store";
+import {
+  ALIBABA_BASE_URL,
+  ANTHROPIC_BASE_URL,
+  ApiPath,
+  BAIDU_BASE_URL,
+  BYTEDANCE_BASE_URL,
+  CHATGLM_BASE_URL,
+  DEEPSEEK_BASE_URL,
+  GEMINI_BASE_URL,
+  GoogleSafetySettingsThreshold,
+  IFLYTEK_BASE_URL,
+  MOONSHOT_BASE_URL,
+  OPENAI_BASE_URL,
+  ServiceProvider,
+  STABILITY_BASE_URL,
+  StoreKey,
+  TENCENT_BASE_URL,
+  XAI_BASE_URL,
+} from "../constant";
 import { ensure } from "../utils/clone";
-import { DEFAULT_CONFIG } from "./config";
 import { getModelProvider } from "../utils/model";
+import { createPersistStore } from "../utils/store";
+import { DEFAULT_CONFIG } from "./config";
 
 let fetchState = 0; // 0 not fetch, 1 fetching, 2 done
 
@@ -50,6 +51,8 @@ const DEFAULT_IFLYTEK_URL = isApp ? IFLYTEK_BASE_URL : ApiPath.Iflytek;
 const DEFAULT_XAI_URL = isApp ? XAI_BASE_URL : ApiPath.XAI;
 
 const DEFAULT_CHATGLM_URL = isApp ? CHATGLM_BASE_URL : ApiPath.ChatGLM;
+
+const DEFAULT_DEEPSEEK_URL = isApp ? DEEPSEEK_BASE_URL : ApiPath.DeepSeek;
 
 const DEFAULT_ACCESS_STATE = {
   accessCode: "",
@@ -115,6 +118,10 @@ const DEFAULT_ACCESS_STATE = {
   // chatglm
   chatglmUrl: DEFAULT_CHATGLM_URL,
   chatglmApiKey: "",
+
+  // deepseek
+  deepseekUrl: DEFAULT_DEEPSEEK_URL,
+  deepseekApiKey: "",
 
   // server config
   needCode: true,
