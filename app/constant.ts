@@ -548,6 +548,7 @@ const googleModels = [
   "gemini-2.0-pro-exp-02-05",
   "gemini-2.5-pro-preview-03-25",
   "gemini-2.5-flash-preview-04-17",
+  "gemini-2.5-pro-preview-05-06",
 ];
 
 const anthropicModels = [
