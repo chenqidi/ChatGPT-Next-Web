@@ -280,7 +280,7 @@ You are ChatGPT, a large language model trained by {{ServiceProvider}}.
 Knowledge cutoff: {{cutoff}}
 Current model: {{model}}
 Current time: {{time}}
-Latex inline: \\(x^2\\) 
+Latex inline: \\(x^2\\)
 Latex block: $$e=mc^2$$
 `;
 
@@ -311,7 +311,7 @@ You are an AI assistant with access to system tools. Your role is to help users 
       - Use markdown code blocks with format: \`\`\`json:mcp:{clientId}\`\`\`
       - Always include:
         * method: "tools/call"（Only this method is supported）
-        * params: 
+        * params:
           - name: must match an available primitive name
           - arguments: required parameters for the primitive
 
@@ -380,7 +380,7 @@ You are an AI assistant with access to system tools. Your role is to help users 
    \`\`\`
 
    This is wrong because the method is not tools/call.
-   
+
    \`\`\`{
   "method": "search_repositories",
   "params": {
@@ -403,9 +403,9 @@ You are an AI assistant with access to system tools. Your role is to help users 
      }
    }
    \`\`\`
-   
+
    please follow the format strictly ONLY use tools/call method!!!!!!!!!!!
-   
+
 `;
 
 export const SUMMARIZE_MODEL = "gpt-4o-mini";
@@ -523,43 +523,14 @@ const openaiModels = [
 ];
 
 const googleModels = [
-  "gemini-1.0-pro", // Deprecated on 2/15/2025
-  "gemini-1.5-pro-latest",
-  "gemini-1.5-pro",
-  "gemini-1.5-pro-002",
-  "gemini-1.5-pro-exp-0827",
-  "gemini-1.5-flash-latest",
-  "gemini-1.5-flash-8b-latest",
-  "gemini-1.5-flash",
-  "gemini-1.5-flash-8b",
-  "gemini-1.5-flash-002",
-  "gemini-1.5-flash-exp-0827",
-  "learnlm-1.5-pro-experimental",
-  "gemini-exp-1114",
-  "gemini-exp-1121",
-  "gemini-exp-1206",
-  "gemini-2.0-flash",
-  "gemini-2.0-flash-exp",
-  "gemini-2.0-flash-lite-preview-02-05",
-  "gemini-2.0-flash-thinking-exp",
-  "gemini-2.0-flash-thinking-exp-1219",
-  "gemini-2.0-flash-thinking-exp-01-21",
-  "gemini-2.0-pro-exp",
-  "gemini-2.0-pro-exp-02-05",
-  "gemini-2.5-pro-preview-03-25",
-  "gemini-2.5-flash-preview-04-17",
-  "gemini-2.5-flash-preview-05-20",
-  "gemini-2.5-pro-preview-05-06",
+  "gemini-2.5-pro",
+  "gemini-2.5-flash",
+  "gemini-2.5-flash-preview-09-2025",
+  "gemini-2.5-flash-lite",
+  "gemini-2.5-flash-lite-preview-09-2025",
 ];
 
 const anthropicModels = [
-  "claude-instant-1.2",
-  "claude-2.0",
-  "claude-2.1",
-  "claude-3-sonnet-20240229",
-  "claude-3-opus-20240229",
-  "claude-3-opus-latest",
-  "claude-3-haiku-20240307",
   "claude-3-5-haiku-20241022",
   "claude-3-5-haiku-latest",
   "claude-3-5-sonnet-20240620",
@@ -569,6 +540,8 @@ const anthropicModels = [
   "claude-3-7-sonnet-latest",
   "claude-sonnet-4-20250514",
   "claude-opus-4-20250514",
+  "claude-sonnet-4-5-20250929",
+  "claude-sonnet-4-5",
 ];
 
 const baiduModels = [
