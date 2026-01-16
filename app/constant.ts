@@ -451,6 +451,9 @@ export const DEFAULT_TTS_VOICES = [
 ];
 
 export const VISION_MODEL_REGEXES = [
+  /gpt/i,
+  /gemini/i,
+  /claude/i,
   /vision/,
   /gpt-4o/,
   /gpt-4\.1/,
