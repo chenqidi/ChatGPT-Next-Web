@@ -168,6 +168,19 @@
   }
 }
 
+.modal-container-compact {
+  width: 40vw;
+  max-width: 450px;
+  min-width: 240px;
+  --modal-padding: 12px;
+
+  .modal-action {
+    &:not(:last-child) {
+      margin-right: 12px;
+    }
+  }
+}
+
 @media screen and (max-width: 600px) {
   .modal-container {
     width: 100vw;

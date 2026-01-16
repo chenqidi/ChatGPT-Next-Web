@@ -80,6 +80,8 @@ const en: LocaleType = {
       Prompt: "Prompts",
       Masks: "Masks",
       Clear: "Clear Context",
+      ClearMessages: "Clear Messages",
+      ClearMessagesConfirm: "Clear all messages in this chat?",
       Settings: "Settings",
       UploadImage: "Upload Images",
     },

@@ -674,6 +674,33 @@ export function ChatActions(props: {
         />
 
         <ChatAction
+          text={Locale.Chat.InputActions.ClearMessages}
+          icon={<DeleteIcon />}
+          onClick={async () => {
+            const confirmed = await showConfirm(
+              Locale.Chat.InputActions.ClearMessagesConfirm,
+              {
+                title: Locale.Chat.InputActions.ClearMessages,
+                compact: true,
+                showHeaderActions: false,
+              },
+            );
+            if (!confirmed) return;
+            chatStore.updateTargetSession(session, (session) => {
+              session.messages = [];
+              session.memoryPrompt = "";
+              session.clearContextIndex = undefined;
+              session.lastSummarizeIndex = 0;
+              session.stat = {
+                tokenCount: 0,
+                wordCount: 0,
+                charCount: 0,
+              };
+            });
+          }}
+        />
+
+        <ChatAction
           onClick={() => setShowModelSelector(true)}
           text={currentModelName}
           icon={<RobotIcon />}

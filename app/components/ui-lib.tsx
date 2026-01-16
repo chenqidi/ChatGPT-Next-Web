@@ -116,6 +116,8 @@ interface ModalProps {
   children?: any;
   actions?: React.ReactNode[];
   defaultMax?: boolean;
+  compact?: boolean;
+  showHeaderActions?: boolean;
   footer?: React.ReactNode;
   onClose?: () => void;
 }
@@ -141,25 +143,28 @@ export function Modal(props: ModalProps) {
     <div
       className={clsx(styles["modal-container"], {
         [styles["modal-container-max"]]: isMax,
+        [styles["modal-container-compact"]]: props.compact,
       })}
     >
       <div className={styles["modal-header"]}>
         <div className={styles["modal-title"]}>{props.title}</div>
 
-        <div className={styles["modal-header-actions"]}>
-          <div
-            className={styles["modal-header-action"]}
-            onClick={() => setMax(!isMax)}
-          >
-            {isMax ? <MinIcon /> : <MaxIcon />}
+        {props.showHeaderActions !== false && (
+          <div className={styles["modal-header-actions"]}>
+            <div
+              className={styles["modal-header-action"]}
+              onClick={() => setMax(!isMax)}
+            >
+              {isMax ? <MinIcon /> : <MaxIcon />}
+            </div>
+            <div
+              className={styles["modal-header-action"]}
+              onClick={props.onClose}
+            >
+              <CloseIcon />
+            </div>
           </div>
-          <div
-            className={styles["modal-header-action"]}
-            onClick={props.onClose}
-          >
-            <CloseIcon />
-          </div>
-        </div>
+        )}
       </div>
 
       <div className={styles["modal-content"]}>{props.children}</div>
@@ -321,7 +326,15 @@ export function Select(
   );
 }
 
-export function showConfirm(content: any) {
+type ConfirmOptions = {
+  title?: string;
+  confirmText?: string;
+  cancelText?: string;
+  compact?: boolean;
+  showHeaderActions?: boolean;
+};
+
+export function showConfirm(content: any, options: ConfirmOptions = {}) {
   const div = document.createElement("div");
   div.className = "modal-mask";
   document.body.appendChild(div);
@@ -332,14 +345,24 @@ export function showConfirm(content: any) {
     div.remove();
   };
 
+  const {
+    title = Locale.UI.Confirm,
+    confirmText = Locale.UI.Confirm,
+    cancelText = Locale.UI.Cancel,
+    compact = false,
+    showHeaderActions,
+  } = options;
+
   return new Promise<boolean>((resolve) => {
     root.render(
       <Modal
-        title={Locale.UI.Confirm}
+        title={title}
+        compact={compact}
+        showHeaderActions={showHeaderActions}
         actions={[
           <IconButton
             key="cancel"
-            text={Locale.UI.Cancel}
+            text={cancelText}
             onClick={() => {
               resolve(false);
               closeModal();
@@ -351,7 +374,7 @@ export function showConfirm(content: any) {
           ></IconButton>,
           <IconButton
             key="confirm"
-            text={Locale.UI.Confirm}
+            text={confirmText}
             type="primary"
             onClick={() => {
               resolve(true);

@@ -79,6 +79,8 @@ const cn = {
       Prompt: "快捷指令",
       Masks: "所有面具",
       Clear: "清除上下文",
+      ClearMessages: "清空消息",
+      ClearMessagesConfirm: "确认清空当前聊天的所有消息？",
       Settings: "对话设置",
       UploadImage: "上传图片",
     },
