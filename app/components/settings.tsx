@@ -9,7 +9,6 @@ import CopyIcon from "../icons/copy.svg";
 import ClearIcon from "../icons/clear.svg";
 import LoadingIcon from "../icons/three-dots.svg";
 import EditIcon from "../icons/edit.svg";
-import FireIcon from "../icons/fire.svg";
 import EyeIcon from "../icons/eye.svg";
 import DownloadIcon from "../icons/download.svg";
 import UploadIcon from "../icons/upload.svg";
@@ -19,7 +18,6 @@ import ConfirmIcon from "../icons/confirm.svg";
 import ConnectionIcon from "../icons/connection.svg";
 import CloudSuccessIcon from "../icons/cloud-success.svg";
 import CloudFailIcon from "../icons/cloud-fail.svg";
-import { trackSettingsPageGuideToCPaymentClick } from "../utils/auth-settings-events";
 import {
   Input,
   List,
@@ -49,8 +47,7 @@ import Locale, {
   changeLang,
   getLang,
 } from "../locales";
-import { copyToClipboard, clientUpdate, semverCompare } from "../utils";
-import Link from "next/link";
+import { copyToClipboard } from "../utils";
 import {
   Anthropic,
   Azure,
@@ -64,14 +61,10 @@ import {
   GoogleSafetySettingsThreshold,
   OPENAI_BASE_URL,
   Path,
-  RELEASE_URL,
   STORAGE_KEY,
   ServiceProvider,
   SlotID,
-  UPDATE_URL,
-  Stability,
   Iflytek,
-  SAAS_CHAT_URL,
   ChatGLM,
   DeepSeek,
   SiliconFlow,
@@ -587,21 +580,6 @@ export function Settings() {
   const updateConfig = config.update;
 
   const updateStore = useUpdateStore();
-  const [checkingUpdate, setCheckingUpdate] = useState(false);
-  const currentVersion = updateStore.formatVersion(updateStore.version);
-  const remoteId = updateStore.formatVersion(updateStore.remoteVersion);
-  const hasNewVersion = semverCompare(currentVersion, remoteId) === -1;
-  const updateUrl = getClientConfig()?.isApp ? RELEASE_URL : UPDATE_URL;
-
-  function checkUpdate(force = false) {
-    setCheckingUpdate(true);
-    updateStore.getLatestVersion(force).then(() => {
-      setCheckingUpdate(false);
-    });
-
-    console.log("[Update] local version ", updateStore.version);
-    console.log("[Update] remote version ", updateStore.remoteVersion);
-  }
 
   const accessStore = useAccessStore();
   const shouldHideBalanceQuery = useMemo(() => {
@@ -647,8 +625,7 @@ export function Settings() {
 
   const showUsage = accessStore.isAuthorized();
   useEffect(() => {
-    // checks per minutes
-    checkUpdate();
+    // checks usage per minutes
     showUsage && checkUsage();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -688,31 +665,6 @@ export function Settings() {
           accessStore.update(
             (access) => (access.accessCode = e.currentTarget.value),
           );
-        }}
-      />
-    </ListItem>
-  );
-
-  const saasStartComponent = (
-    <ListItem
-      className={styles["subtitle-button"]}
-      title={
-        Locale.Settings.Access.SaasStart.Title +
-        `${Locale.Settings.Access.SaasStart.Label}`
-      }
-      subTitle={Locale.Settings.Access.SaasStart.SubTitle}
-    >
-      <IconButton
-        aria={
-          Locale.Settings.Access.SaasStart.Title +
-          Locale.Settings.Access.SaasStart.ChatNow
-        }
-        icon={<FireIcon />}
-        type={"primary"}
-        text={Locale.Settings.Access.SaasStart.ChatNow}
-        onClick={() => {
-          trackSettingsPageGuideToCPaymentClick();
-          window.location.href = SAAS_CHAT_URL;
         }}
       />
     </ListItem>
@@ -1360,46 +1312,6 @@ export function Settings() {
     </>
   );
 
-  const stabilityConfigComponent = accessStore.provider ===
-    ServiceProvider.Stability && (
-    <>
-      <ListItem
-        title={Locale.Settings.Access.Stability.Endpoint.Title}
-        subTitle={
-          Locale.Settings.Access.Stability.Endpoint.SubTitle +
-          Stability.ExampleEndpoint
-        }
-      >
-        <input
-          aria-label={Locale.Settings.Access.Stability.Endpoint.Title}
-          type="text"
-          value={accessStore.stabilityUrl}
-          placeholder={Stability.ExampleEndpoint}
-          onChange={(e) =>
-            accessStore.update(
-              (access) => (access.stabilityUrl = e.currentTarget.value),
-            )
-          }
-        ></input>
-      </ListItem>
-      <ListItem
-        title={Locale.Settings.Access.Stability.ApiKey.Title}
-        subTitle={Locale.Settings.Access.Stability.ApiKey.SubTitle}
-      >
-        <PasswordInput
-          aria-label={Locale.Settings.Access.Stability.ApiKey.Title}
-          value={accessStore.stabilityApiKey}
-          type="text"
-          placeholder={Locale.Settings.Access.Stability.ApiKey.Placeholder}
-          onChange={(e) => {
-            accessStore.update(
-              (access) => (access.stabilityApiKey = e.currentTarget.value),
-            );
-          }}
-        />
-      </ListItem>
-    </>
-  );
   const lflytekConfigComponent = accessStore.provider ===
     ServiceProvider.Iflytek && (
     <>
@@ -1508,39 +1420,6 @@ export function Settings() {
                 <Avatar avatar={config.avatar} />
               </div>
             </Popover>
-          </ListItem>
-
-          <ListItem
-            title={Locale.Settings.Update.Version(currentVersion ?? "unknown")}
-            subTitle={
-              checkingUpdate
-                ? Locale.Settings.Update.IsChecking
-                : hasNewVersion
-                ? Locale.Settings.Update.FoundUpdate(remoteId ?? "ERROR")
-                : Locale.Settings.Update.IsLatest
-            }
-          >
-            {checkingUpdate ? (
-              <LoadingIcon />
-            ) : hasNewVersion ? (
-              clientConfig?.isApp ? (
-                <IconButton
-                  icon={<ResetIcon></ResetIcon>}
-                  text={Locale.Settings.Update.GoToUpdate}
-                  onClick={() => clientUpdate()}
-                />
-              ) : (
-                <Link href={updateUrl} target="_blank" className="link">
-                  {Locale.Settings.Update.GoToUpdate}
-                </Link>
-              )
-            ) : (
-              <IconButton
-                icon={<ResetIcon></ResetIcon>}
-                text={Locale.Settings.Update.CheckUpdate}
-                onClick={() => checkUpdate(true)}
-              />
-            )}
           </ListItem>
 
           <ListItem title={Locale.Settings.SendKey}>
@@ -1775,7 +1654,6 @@ export function Settings() {
         </List>
 
         <List id={SlotID.CustomModel}>
-          {saasStartComponent}
           {accessCodeComponent}
 
           {!accessStore.hideUserApiKey && (
@@ -1817,7 +1695,6 @@ export function Settings() {
                   {tencentConfigComponent}
                   {moonshotConfigComponent}
                   {deepseekConfigComponent}
-                  {stabilityConfigComponent}
                   {lflytekConfigComponent}
                   {XAIConfigComponent}
                   {chatglmConfigComponent}

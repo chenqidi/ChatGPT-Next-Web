@@ -20,8 +20,6 @@ import SpeakIcon from "../icons/speak.svg";
 import SpeakStopIcon from "../icons/speak-stop.svg";
 import LoadingIcon from "../icons/three-dots.svg";
 import LoadingButtonIcon from "../icons/loading.svg";
-import PromptIcon from "../icons/prompt.svg";
-import MaskIcon from "../icons/mask.svg";
 import MaxIcon from "../icons/max.svg";
 import MinIcon from "../icons/min.svg";
 import ResetIcon from "../icons/reload.svg";
@@ -644,18 +642,45 @@ export function ChatActions(props: {
         />
 
         <ChatAction
-          onClick={props.showPromptHints}
-          text={Locale.Chat.InputActions.Prompt}
-          icon={<PromptIcon />}
+          onClick={() => setShowModelSelector(true)}
+          text={currentModelName}
+          icon={<RobotIcon />}
         />
 
-        <ChatAction
-          onClick={() => {
-            navigate(Path.Masks);
-          }}
-          text={Locale.Chat.InputActions.Masks}
-          icon={<MaskIcon />}
-        />
+        {showModelSelector && (
+          <Selector
+            defaultSelectedValue={`${currentModel}@${currentProviderName}`}
+            items={models.map((m) => ({
+              title: `${m.displayName}${
+                m?.provider?.providerName
+                  ? " (" + m?.provider?.providerName + ")"
+                  : ""
+              }`,
+              value: `${m.name}@${m?.provider?.providerName}`,
+            }))}
+            onClose={() => setShowModelSelector(false)}
+            onSelection={(s) => {
+              if (s.length === 0) return;
+              const [model, providerName] = getModelProvider(s[0]);
+              chatStore.updateTargetSession(session, (session) => {
+                session.mask.modelConfig.model = model as ModelType;
+                session.mask.modelConfig.providerName =
+                  providerName as ServiceProvider;
+                session.mask.syncGlobalConfig = false;
+              });
+              if (providerName == "ByteDance") {
+                const selectedModel = models.find(
+                  (m) =>
+                    m.name == model &&
+                    m?.provider?.providerName == providerName,
+                );
+                showToast(selectedModel?.displayName ?? "");
+              } else {
+                showToast(model);
+              }
+            }}
+          />
+        )}
 
         <ChatAction
           text={Locale.Chat.InputActions.Clear}
@@ -698,47 +723,6 @@ export function ChatActions(props: {
             });
           }}
         />
-
-        <ChatAction
-          onClick={() => setShowModelSelector(true)}
-          text={currentModelName}
-          icon={<RobotIcon />}
-        />
-
-        {showModelSelector && (
-          <Selector
-            defaultSelectedValue={`${currentModel}@${currentProviderName}`}
-            items={models.map((m) => ({
-              title: `${m.displayName}${
-                m?.provider?.providerName
-                  ? " (" + m?.provider?.providerName + ")"
-                  : ""
-              }`,
-              value: `${m.name}@${m?.provider?.providerName}`,
-            }))}
-            onClose={() => setShowModelSelector(false)}
-            onSelection={(s) => {
-              if (s.length === 0) return;
-              const [model, providerName] = getModelProvider(s[0]);
-              chatStore.updateTargetSession(session, (session) => {
-                session.mask.modelConfig.model = model as ModelType;
-                session.mask.modelConfig.providerName =
-                  providerName as ServiceProvider;
-                session.mask.syncGlobalConfig = false;
-              });
-              if (providerName == "ByteDance") {
-                const selectedModel = models.find(
-                  (m) =>
-                    m.name == model &&
-                    m?.provider?.providerName == providerName,
-                );
-                showToast(selectedModel?.displayName ?? "");
-              } else {
-                showToast(model);
-              }
-            }}
-          />
-        )}
 
         {supportsCustomSize(currentModel) && (
           <ChatAction

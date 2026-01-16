@@ -9,8 +9,6 @@ export const FETCH_COMMIT_URL = `https://api.github.com/repos/${OWNER}/${REPO}/c
 export const FETCH_TAG_URL = `https://api.github.com/repos/${OWNER}/${REPO}/tags?per_page=1`;
 export const RUNTIME_CONFIG_DOM = "danger-runtime-config";
 
-export const STABILITY_BASE_URL = "https://api.stability.ai";
-
 export const OPENAI_BASE_URL = "https://api.openai.com";
 export const ANTHROPIC_BASE_URL = "https://api.anthropic.com";
 
@@ -47,8 +45,6 @@ export enum Path {
   Masks = "/masks",
   Plugins = "/plugins",
   Auth = "/auth",
-  Sd = "/sd",
-  SdNew = "/sd-new",
   Artifacts = "/artifacts",
   SearchChat = "/search-chat",
   McpMarket = "/mcp-market",
@@ -66,7 +62,6 @@ export enum ApiPath {
   Tencent = "/api/tencent",
   Moonshot = "/api/moonshot",
   Iflytek = "/api/iflytek",
-  Stability = "/api/stability",
   Artifacts = "/api/artifacts",
   XAI = "/api/xai",
   ChatGLM = "/api/chatglm",
@@ -93,7 +88,6 @@ export enum StoreKey {
   Prompt = "prompt-store",
   Update = "chat-update",
   Sync = "sync",
-  SdList = "sd-list",
   Mcp = "mcp-store",
 }
 
@@ -124,7 +118,6 @@ export enum ServiceProvider {
   Alibaba = "Alibaba",
   Tencent = "Tencent",
   Moonshot = "Moonshot",
-  Stability = "Stability",
   Iflytek = "Iflytek",
   XAI = "XAI",
   ChatGLM = "ChatGLM",
@@ -142,7 +135,6 @@ export enum GoogleSafetySettingsThreshold {
 }
 
 export enum ModelProvider {
-  Stability = "Stability",
   GPT = "GPT",
   GeminiPro = "GeminiPro",
   Claude = "Claude",
@@ -157,11 +149,6 @@ export enum ModelProvider {
   DeepSeek = "DeepSeek",
   SiliconFlow = "SiliconFlow",
 }
-
-export const Stability = {
-  GeneratePath: "v2beta/stable-image/generate",
-  ExampleEndpoint: "https://api.stability.ai",
-};
 
 export const Anthropic = {
   ChatPath: "v1/messages",

@@ -26,9 +26,6 @@ const en: LocaleType = {
     Input: "access code",
     Confirm: "Confirm",
     Later: "Later",
-    SaasTips: "Too Complex, Use Immediately Now",
-    TopTips:
-      "🥳 NextChat AI launch promotion: Instantly unlock the latest models like OpenAI o1, GPT-4o, Claude-3.5!",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} messages`,
@@ -203,16 +200,6 @@ const en: LocaleType = {
       SubTitle: "Newest message will be filled to this template",
     },
 
-    Update: {
-      Version: (x: string) => `Version: ${x}`,
-      IsLatest: "Latest version",
-      CheckUpdate: "Check Update",
-      IsChecking: "Checking update...",
-      FoundUpdate: (x: string) => `Found new version: ${x}`,
-      GoToUpdate: "Update",
-      Success: "Update Successful.",
-      Failed: "Update Failed.",
-    },
     SendKey: "Send Key",
     Theme: "Theme",
     TightBorder: "Tight Border",
@@ -316,14 +303,6 @@ const en: LocaleType = {
       NoAccess: "Enter API Key to check balance",
     },
     Access: {
-      SaasStart: {
-        Title: "Use NextChat AI",
-        Label: " (Most Cost-Effective Option)",
-        SubTitle:
-          "Maintained by NextChat, zero setup needed, unlock OpenAI o1, GPT-4o," +
-          " Claude-3.5 and more",
-        ChatNow: "Start Now",
-      },
       AccessCode: {
         Title: "Access Code",
         SubTitle: "Access control Enabled",
@@ -487,17 +466,6 @@ const en: LocaleType = {
           Title: "SiliconFlow API Key",
           SubTitle: "Use a custom SiliconFlow API Key",
           Placeholder: "SiliconFlow API Key",
-        },
-        Endpoint: {
-          Title: "Endpoint Address",
-          SubTitle: "Example: ",
-        },
-      },
-      Stability: {
-        ApiKey: {
-          Title: "Stability API Key",
-          SubTitle: "Use a custom Stability API Key",
-          Placeholder: "Stability API Key",
         },
         Endpoint: {
           Title: "Endpoint Address",
@@ -805,61 +773,6 @@ const en: LocaleType = {
   URLCommand: {
     Code: "Detected access code from url, confirm to apply? ",
     Settings: "Detected settings from url, confirm to apply?",
-  },
-  SdPanel: {
-    Prompt: "Prompt",
-    NegativePrompt: "Negative Prompt",
-    PleaseInput: (name: string) => `Please input ${name}`,
-    AspectRatio: "Aspect Ratio",
-    ImageStyle: "Image Style",
-    OutFormat: "Output Format",
-    AIModel: "AI Model",
-    ModelVersion: "Model Version",
-    Submit: "Submit",
-    ParamIsRequired: (name: string) => `${name} is required`,
-    Styles: {
-      D3Model: "3d-model",
-      AnalogFilm: "analog-film",
-      Anime: "anime",
-      Cinematic: "cinematic",
-      ComicBook: "comic-book",
-      DigitalArt: "digital-art",
-      Enhance: "enhance",
-      FantasyArt: "fantasy-art",
-      Isometric: "isometric",
-      LineArt: "line-art",
-      LowPoly: "low-poly",
-      ModelingCompound: "modeling-compound",
-      NeonPunk: "neon-punk",
-      Origami: "origami",
-      Photographic: "photographic",
-      PixelArt: "pixel-art",
-      TileTexture: "tile-texture",
-    },
-  },
-  Sd: {
-    SubTitle: (count: number) => `${count} images`,
-    Actions: {
-      Params: "See Params",
-      Copy: "Copy Prompt",
-      Delete: "Delete",
-      Retry: "Retry",
-      ReturnHome: "Return Home",
-      History: "History",
-    },
-    EmptyRecord: "No images yet",
-    Status: {
-      Name: "Status",
-      Success: "Success",
-      Error: "Error",
-      Wait: "Waiting",
-      Running: "Running",
-    },
-    Danger: {
-      Delete: "Confirm to delete?",
-    },
-    GenerateParams: "Generate Params",
-    Detail: "Detail",
   },
 };
 

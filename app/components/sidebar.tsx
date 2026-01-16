@@ -34,7 +34,6 @@ import { isMcpEnabled } from "../mcp/actions";
 
 const DISCOVERY = [
   { name: Locale.Plugin.Name, path: Path.Plugins },
-  { name: "Stable Diffusion", path: Path.Sd },
   { name: Locale.SearchChat.Page.Title, path: Path.SearchChat },
 ];
 

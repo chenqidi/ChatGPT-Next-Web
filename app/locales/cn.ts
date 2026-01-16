@@ -25,9 +25,6 @@ const cn = {
     Input: "在此处填写访问码",
     Confirm: "确认",
     Later: "稍后再说",
-    SaasTips: "配置太麻烦，想要立即使用",
-    TopTips:
-      "🥳 NextChat AI 首发优惠，立刻解锁 OpenAI o1, GPT-4o, Claude-3.5 等最新大模型",
   },
   ChatItem: {
     ChatItemCount: (count: number) => `${count} 条对话`,
@@ -201,16 +198,6 @@ const cn = {
       SubTitle: "用户最新的一条消息会填充到此模板",
     },
 
-    Update: {
-      Version: (x: string) => `当前版本：${x}`,
-      IsLatest: "已是最新版本",
-      CheckUpdate: "检查更新",
-      IsChecking: "正在检查更新...",
-      FoundUpdate: (x: string) => `发现新版本：${x}`,
-      GoToUpdate: "前往更新",
-      Success: "更新成功！",
-      Failed: "更新失败",
-    },
     SendKey: "发送键",
     Theme: "主题",
     TightBorder: "无边框模式",
@@ -313,13 +300,6 @@ const cn = {
     },
 
     Access: {
-      SaasStart: {
-        Title: "使用 NextChat AI",
-        Label: "（性价比最高的方案）",
-        SubTitle:
-          "由 NextChat 官方维护, 零配置开箱即用，支持 OpenAI o1, GPT-4o, Claude-3.5 等最新大模型",
-        ChatNow: "立刻对话",
-      },
       AccessCode: {
         Title: "访问密码",
         SubTitle: "管理员已开启加密访问",
@@ -503,17 +483,6 @@ const cn = {
           Title: "接口密钥",
           SubTitle: "使用自定义硅基流动 API Key",
           Placeholder: "硅基流动 API Key",
-        },
-        Endpoint: {
-          Title: "接口地址",
-          SubTitle: "样例：",
-        },
-      },
-      Stability: {
-        ApiKey: {
-          Title: "接口密钥",
-          SubTitle: "使用自定义 Stability API Key",
-          Placeholder: "Stability API Key",
         },
         Endpoint: {
           Title: "接口地址",
@@ -795,61 +764,6 @@ const cn = {
     Messages: "消息",
     Topic: "主题",
     Time: "时间",
-  },
-  SdPanel: {
-    Prompt: "画面提示",
-    NegativePrompt: "否定提示",
-    PleaseInput: (name: string) => `请输入${name}`,
-    AspectRatio: "横纵比",
-    ImageStyle: "图像风格",
-    OutFormat: "输出格式",
-    AIModel: "AI模型",
-    ModelVersion: "模型版本",
-    Submit: "提交生成",
-    ParamIsRequired: (name: string) => `${name}不能为空`,
-    Styles: {
-      D3Model: "3D模型",
-      AnalogFilm: "模拟电影",
-      Anime: "动漫",
-      Cinematic: "电影风格",
-      ComicBook: "漫画书",
-      DigitalArt: "数字艺术",
-      Enhance: "增强",
-      FantasyArt: "幻想艺术",
-      Isometric: "等角",
-      LineArt: "线描",
-      LowPoly: "低多边形",
-      ModelingCompound: "建模材料",
-      NeonPunk: "霓虹朋克",
-      Origami: "折纸",
-      Photographic: "摄影",
-      PixelArt: "像素艺术",
-      TileTexture: "贴图",
-    },
-  },
-  Sd: {
-    SubTitle: (count: number) => `共 ${count} 条绘画`,
-    Actions: {
-      Params: "查看参数",
-      Copy: "复制提示词",
-      Delete: "删除",
-      Retry: "重试",
-      ReturnHome: "返回首页",
-      History: "查看历史",
-    },
-    EmptyRecord: "暂无绘画记录",
-    Status: {
-      Name: "状态",
-      Success: "成功",
-      Error: "失败",
-      Wait: "等待中",
-      Running: "运行中",
-    },
-    Danger: {
-      Delete: "确认删除？",
-    },
-    GenerateParams: "生成参数",
-    Detail: "详情",
   },
 };
 
