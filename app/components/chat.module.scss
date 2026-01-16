@@ -350,24 +350,6 @@
   display: flex;
   align-items: center;
 
-  .chat-message-actions {
-    display: flex;
-    box-sizing: border-box;
-    font-size: 12px;
-    align-items: flex-end;
-    justify-content: space-between;
-    transition: all ease 0.3s;
-    transform: scale(0.9) translateY(5px);
-    margin: 0 10px;
-    opacity: 0;
-    pointer-events: none;
-
-    .chat-input-actions {
-      display: flex;
-      flex-wrap: nowrap;
-    }
-  }
-
   .chat-model-name {
     font-size: 12px;
     color: var(--black);
@@ -391,6 +373,26 @@
       pointer-events: all;
       transform: scale(1) translateY(0);
     }
+  }
+}
+
+.chat-message-actions {
+  display: flex;
+  box-sizing: border-box;
+  font-size: 12px;
+  align-items: flex-end;
+  justify-content: flex-start;
+  transition: all ease 0.3s;
+  transform: scale(0.98) translateY(-2px);
+  margin-top: 6px;
+  opacity: 0;
+  pointer-events: none;
+  align-self: flex-start;
+
+  .chat-input-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
   }
 }
 
