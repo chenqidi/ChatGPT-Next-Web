@@ -51,9 +51,6 @@ export function RealtimeChat({
   const temperature = config.realtimeConfig.temperature;
   const apiKey = config.realtimeConfig.apiKey;
   const model = config.realtimeConfig.model;
-  const azure = config.realtimeConfig.provider === "Azure";
-  const azureEndpoint = config.realtimeConfig.azure.endpoint;
-  const azureDeployment = config.realtimeConfig.azure.deployment;
   const voice = config.realtimeConfig.voice;
 
   const handleConnect = async () => {
@@ -61,13 +58,7 @@ export function RealtimeChat({
     if (!isConnected) {
       try {
         setIsConnecting(true);
-        clientRef.current = azure
-          ? new RTClient(
-              new URL(azureEndpoint),
-              { key: apiKey },
-              { deployment: azureDeployment },
-            )
-          : new RTClient({ key: apiKey }, { model });
+        clientRef.current = new RTClient({ key: apiKey }, { model });
         const modalities: Modality[] =
           modality === "audio" ? ["text", "audio"] : ["text"];
         const turnDetection: TurnDetection = useVAD

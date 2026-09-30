@@ -467,10 +467,6 @@ describe("DeepSeek chat requests", () => {
 
   test.each([
     [ServiceProvider.OpenAI, "gpt-4o-mini"],
-    [ServiceProvider.Azure, "gpt-4o-mini"],
-    [ServiceProvider.Alibaba, "qwen-turbo"],
-    [ServiceProvider.ByteDance, "Doubao-lite-4k"],
-    [ServiceProvider.SiliconFlow, "Qwen/Qwen2.5-7B-Instruct"],
   ] as const)(
     "preserves streaming responses for %s",
     async (provider, model) => {
@@ -482,14 +478,7 @@ describe("DeepSeek chat requests", () => {
         ...opts,
         config: { ...opts.config, providerName: provider },
       });
-      const chunk =
-        provider === ServiceProvider.Alibaba
-          ? {
-              output: {
-                choices: [{ message: { content: "Existing provider answer" } }],
-              },
-            }
-          : { choices: [{ delta: { content: "Existing provider answer" } }] };
+      const chunk = { choices: [{ delta: { content: "Existing provider answer" } }] };
       await emit([chunk]);
       expect(opts.onFinish.mock.calls[0][0]).toBe("Existing provider answer");
       expect(opts.onError).not.toHaveBeenCalled();
