@@ -6,14 +6,16 @@ import {
   useAppConfig,
   useChatStore,
   ChatMessageTool,
+  ChatMessage,
   usePluginStore,
 } from "@/app/store";
-import { streamWithThink } from "@/app/utils/chat";
+import { preProcessImageContent, streamWithThink } from "@/app/utils/chat";
 import {
   ChatOptions,
   getHeaders,
   LLMApi,
   LLMModel,
+  ChatCompletionMessage,
   SpeechOptions,
 } from "../api";
 import { getClientConfig } from "@/app/config/client";
@@ -22,7 +24,6 @@ import {
   getMessageTextContentWithoutThinking,
   getTimeoutMSByModel,
 } from "@/app/utils";
-import { RequestPayload } from "./openai";
 import { fetch } from "@/app/utils/stream";
 
 export class DeepSeekApi implements LLMApi {
@@ -64,180 +65,173 @@ export class DeepSeekApi implements LLMApi {
   }
 
   async chat(options: ChatOptions) {
-    const messages: ChatOptions["messages"] = [];
-    for (const v of options.messages) {
-      if (v.role === "assistant") {
-        const content = getMessageTextContentWithoutThinking(v);
-        messages.push({ role: v.role, content });
-      } else {
-        const content = getMessageTextContent(v);
-        messages.push({ role: v.role, content });
-      }
-    }
-
-    // 检测并修复消息顺序，确保除system外的第一个消息是user
-    const filteredMessages: ChatOptions["messages"] = [];
-    let hasFoundFirstUser = false;
-
-    for (const msg of messages) {
-      if (msg.role === "system") {
-        // Keep all system messages
-        filteredMessages.push(msg);
-      } else if (msg.role === "user") {
-        // User message directly added
-        filteredMessages.push(msg);
-        hasFoundFirstUser = true;
-      } else if (hasFoundFirstUser) {
-        // After finding the first user message, all subsequent non-system messages are retained.
-        filteredMessages.push(msg);
-      }
-      // If hasFoundFirstUser is false and it is not a system message, it will be skipped.
-    }
-
     const modelConfig = {
       ...useAppConfig.getState().modelConfig,
       ...useChatStore.getState().currentSession().mask.modelConfig,
-      ...{
-        model: options.config.model,
-        providerName: options.config.providerName,
-      },
+      ...options.config,
     };
+    const messages: ChatCompletionMessage[] = [];
+    for (const message of options.messages) {
+      const apiMessages = (message as ChatMessage).apiMessages;
+      if (message.role === "assistant" && apiMessages?.length) {
+        messages.push(...apiMessages);
+      } else if (message.role === "assistant") {
+        messages.push({
+          role: "assistant",
+          content: getMessageTextContentWithoutThinking(message),
+          reasoning_content: "",
+        });
+      } else {
+        const content =
+          message.role === "user" && modelConfig.model === "deepseek-flash"
+            ? await preProcessImageContent(message.content)
+            : getMessageTextContent(message);
+        messages.push({ role: message.role, content });
+      }
+    }
 
-    const requestPayload: RequestPayload = {
+    let hasFoundFirstUser = false;
+    const filteredMessages = messages.filter((message) => {
+      if (message.role === "user") hasFoundFirstUser = true;
+      return message.role === "system" || hasFoundFirstUser;
+    });
+    const requestPayload = {
       messages: filteredMessages,
       stream: options.config.stream,
       model: modelConfig.model,
-      temperature: modelConfig.temperature,
-      presence_penalty: modelConfig.presence_penalty,
-      frequency_penalty: modelConfig.frequency_penalty,
-      top_p: modelConfig.top_p,
-      // max_tokens: Math.max(modelConfig.max_tokens, 1024),
-      // Please do not ask me why not send max_tokens, no reason, this param is just shit, I dont want to explain anymore.
+      top_p: Math.min(1, Math.max(0.95, modelConfig.top_p ?? 1)),
     };
 
-    console.log("[Request] openai payload: ", requestPayload);
-
-    const shouldStream = !!options.config.stream;
     const controller = new AbortController();
     options.onController?.(controller);
+    const timeoutMs = getTimeoutMSByModel(modelConfig.model);
+    const requestTimeoutId = setTimeout(() => controller.abort(), timeoutMs);
+    const clearRequestTimeout = () => clearTimeout(requestTimeoutId);
+    controller.signal.addEventListener("abort", clearRequestTimeout, {
+      once: true,
+    });
 
     try {
       const chatPath = this.path(DeepSeek.ChatPath);
-      const chatPayload = {
-        method: "POST",
-        body: JSON.stringify(requestPayload),
-        signal: controller.signal,
-        headers: getHeaders(),
-      };
-
-      // make a fetch request
-      const requestTimeoutId = setTimeout(
-        () => controller.abort(),
-        getTimeoutMSByModel(options.config.model),
-      );
-
-      if (shouldStream) {
+      const headers = getHeaders();
+      if (options.config.stream) {
         const [tools, funcs] = usePluginStore
           .getState()
           .getAsTools(
             useChatStore.getState().currentSession().mask?.plugin || [],
           );
+        const apiMessages: ChatCompletionMessage[] = [];
+        let reasoningContent = "";
+        let answerContent = "";
         return streamWithThink(
           chatPath,
           requestPayload,
-          getHeaders(),
+          headers,
           tools as any,
           funcs,
           controller,
-          // parseSSE
           (text: string, runTools: ChatMessageTool[]) => {
-            // console.log("parseSSE", text, runTools);
-            const json = JSON.parse(text);
-            const choices = json.choices as Array<{
-              delta: {
-                content: string | null;
-                tool_calls: ChatMessageTool[];
-                reasoning_content: string | null;
-              };
-            }>;
-            const tool_calls = choices[0]?.delta?.tool_calls;
-            if (tool_calls?.length > 0) {
-              const index = tool_calls[0]?.index;
-              const id = tool_calls[0]?.id;
-              const args = tool_calls[0]?.function?.arguments;
-              if (id) {
+            const delta = JSON.parse(text).choices?.[0]?.delta;
+            if (!delta) return { isThinking: false, content: "" };
+            for (const tool of delta.tool_calls ?? []) {
+              if (tool.id) {
                 runTools.push({
-                  id,
-                  type: tool_calls[0]?.type,
+                  id: tool.id,
+                  index: tool.index,
+                  type: tool.type,
                   function: {
-                    name: tool_calls[0]?.function?.name as string,
-                    arguments: args,
+                    name: tool.function?.name,
+                    arguments: tool.function?.arguments ?? "",
                   },
                 });
               } else {
-                // @ts-ignore
-                runTools[index]["function"]["arguments"] += args;
+                const pendingTool = runTools.find(
+                  (pending) => pending.index === tool.index,
+                );
+                if (pendingTool?.function) {
+                  pendingTool.function.arguments +=
+                    tool.function?.arguments ?? "";
+                }
               }
             }
-            const reasoning = choices[0]?.delta?.reasoning_content;
-            const content = choices[0]?.delta?.content;
-
-            // Skip if both content and reasoning_content are empty or null
-            if (
-              (!reasoning || reasoning.length === 0) &&
-              (!content || content.length === 0)
-            ) {
-              return {
-                isThinking: false,
-                content: "",
-              };
-            }
-
-            if (reasoning && reasoning.length > 0) {
-              return {
-                isThinking: true,
-                content: reasoning,
-              };
-            } else if (content && content.length > 0) {
-              return {
-                isThinking: false,
-                content: content,
-              };
-            }
-
-            return {
-              isThinking: false,
-              content: "",
+            const reasoning = delta.reasoning_content ?? "";
+            const content = delta.content ?? "";
+            reasoningContent += reasoning;
+            answerContent += content;
+            return reasoning
+              ? {
+                  isThinking: true,
+                  content: reasoning,
+                  contentAfterThinking: content,
+                }
+              : { isThinking: false, content };
+          },
+          (payload, toolCallMessage, toolCallResult) => {
+            const assistantMessage: ChatCompletionMessage = {
+              role: "assistant",
+              content: answerContent,
+              reasoning_content: reasoningContent,
+              tool_calls: toolCallMessage.tool_calls.map(
+                (tool: ChatMessageTool) => ({
+                  id: tool.id,
+                  type: tool.type,
+                  function: tool.function,
+                }),
+              ),
             };
+            payload.messages.push(assistantMessage, ...toolCallResult);
+            apiMessages.push(assistantMessage, ...toolCallResult);
+            reasoningContent = "";
+            answerContent = "";
           },
-          // processToolMessage, include tool_calls message and tool call results
-          (
-            requestPayload: RequestPayload,
-            toolCallMessage: any,
-            toolCallResult: any[],
-          ) => {
-            // @ts-ignore
-            requestPayload?.messages?.splice(
-              // @ts-ignore
-              requestPayload?.messages?.length,
-              0,
-              toolCallMessage,
-              ...toolCallResult,
-            );
+          {
+            ...options,
+            onFinish: (message: string, res: Response) => {
+              clearRequestTimeout();
+              controller.signal.removeEventListener(
+                "abort",
+                clearRequestTimeout,
+              );
+              apiMessages.push({
+                role: "assistant",
+                content: answerContent,
+                reasoning_content: reasoningContent,
+              });
+              options.onFinish(message, res, apiMessages);
+            },
+            onError: (error: Error) => {
+              clearRequestTimeout();
+              controller.signal.removeEventListener(
+                "abort",
+                clearRequestTimeout,
+              );
+              options.onError?.(error);
+            },
           },
-          options,
+          timeoutMs,
         );
-      } else {
-        const res = await fetch(chatPath, chatPayload);
-        clearTimeout(requestTimeoutId);
-
-        const resJson = await res.json();
-        const message = this.extractMessage(resJson);
-        options.onFinish(message, res);
       }
+
+      const res = await fetch(chatPath, {
+        method: "POST",
+        body: JSON.stringify(requestPayload),
+        signal: controller.signal,
+        headers,
+      });
+      const resJson = await res.json();
+      const message = this.extractMessage(resJson);
+      const reasoning = resJson.choices?.[0]?.message?.reasoning_content ?? "";
+      options.onFinish(message, res, [
+        { role: "assistant", content: message, reasoning_content: reasoning },
+      ]);
     } catch (e) {
-      console.log("[Request] failed to make a chat request", e);
+      clearRequestTimeout();
       options.onError?.(e as Error);
+    } finally {
+      if (!options.config.stream) {
+        clearRequestTimeout();
+        controller.signal.removeEventListener("abort", clearRequestTimeout);
+      }
     }
   }
   async usage() {

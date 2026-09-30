@@ -50,6 +50,14 @@ export interface RequestMessage {
   content: string | MultimodalContent[];
 }
 
+/** Raw completion messages preserve reasoning and tool exchanges for subsequent requests. */
+export interface ChatCompletionMessage extends Omit<RequestMessage, "role"> {
+  role: MessageRole | "tool";
+  reasoning_content?: string;
+  tool_calls?: ChatMessageTool[];
+  tool_call_id?: string;
+}
+
 export interface LLMConfig {
   model: string;
   providerName?: string;
@@ -77,7 +85,12 @@ export interface ChatOptions {
   config: LLMConfig;
 
   onUpdate?: (message: string, chunk: string) => void;
-  onFinish: (message: string, responseRes: Response) => void;
+  /** Receives rendered text and optional raw reasoning/tool history for subsequent requests. */
+  onFinish: (
+    message: string,
+    responseRes: Response,
+    apiMessages?: ChatCompletionMessage[],
+  ) => void;
   onError?: (err: Error) => void;
   onController?: (controller: AbortController) => void;
   onBeforeTool?: (tool: ChatMessageTool) => void;

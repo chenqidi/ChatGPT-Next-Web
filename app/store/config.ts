@@ -195,13 +195,16 @@ export const useAppConfig = createPersistStore(
   }),
   {
     name: StoreKey.Config,
-    version: 4.1,
+    version: 4.2,
 
     merge(persistedState, currentState) {
       const state = persistedState as ChatConfig | undefined;
       if (!state) return { ...currentState };
       const models = currentState.models.slice();
       state.models.forEach((pModel) => {
+        // DeepSeek's built-in catalog uses the current definitions.
+        if (pModel.provider?.id === ServiceProvider.DeepSeek.toLowerCase())
+          return;
         const idx = models.findIndex(
           (v) => v.name === pModel.name && v.provider === pModel.provider,
         );

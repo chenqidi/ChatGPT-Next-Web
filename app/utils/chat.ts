@@ -402,6 +402,7 @@ export function streamWithThink(
   ) => {
     isThinking: boolean;
     content: string | undefined;
+    contentAfterThinking?: string;
   },
   processToolMessage: (
     requestPayload: any,
@@ -409,6 +410,7 @@ export function streamWithThink(
     toolCallResult: any[],
   ) => void,
   options: any,
+  timeoutMs = REQUEST_TIMEOUT_MS,
 ) {
   let responseText = "";
   let remainText = "";
@@ -419,13 +421,18 @@ export function streamWithThink(
   let isInThinkingMode = false;
   let lastIsThinking = false;
   let lastIsThinkingTagged = false; //between <think> and </think> tags
+  let requestFailed = false;
 
   // animate response to make it looks smooth
   function animateResponseText() {
     if (finished || controller.signal.aborted) {
       responseText += remainText;
       console.log("[Response Animation] finished");
-      if (responseText?.length === 0) {
+      if (
+        responseText?.length === 0 &&
+        !requestFailed &&
+        !controller.signal.aborted
+      ) {
         options.onError?.(new Error("empty response from server"));
       }
       return;
@@ -502,12 +509,13 @@ export function streamWithThink(
               }));
           }),
         ).then((toolCallResult) => {
+          if (controller.signal.aborted || finished) return;
           processToolMessage(requestPayload, toolCallMessage, toolCallResult);
           setTimeout(() => {
-            // call again
+            if (controller.signal.aborted || finished) return;
             console.debug("[ChatAPI] restart");
             running = false;
-            chatApi(chatPath, headers, requestPayload, tools); // call fetchEventSource
+            chatApi(chatPath, headers, requestPayload, tools);
           }, 60);
         });
         return;
@@ -521,7 +529,11 @@ export function streamWithThink(
     }
   };
 
-  controller.signal.onabort = finish;
+  controller.signal.onabort = () => {
+    runTools = [];
+    running = false;
+    finish();
+  };
 
   function chatApi(
     chatPath: string,
@@ -538,15 +550,19 @@ export function streamWithThink(
       signal: controller.signal,
       headers,
     };
-    const requestTimeoutId = setTimeout(
-      () => controller.abort(),
-      REQUEST_TIMEOUT_MS,
-    );
+    const requestTimeoutId = setTimeout(() => controller.abort(), timeoutMs);
+    const clearConnectionTimeout = () => {
+      clearTimeout(requestTimeoutId);
+      controller.signal.removeEventListener("abort", clearConnectionTimeout);
+    };
+    controller.signal.addEventListener("abort", clearConnectionTimeout, {
+      once: true,
+    });
     fetchEventSource(chatPath, {
       fetch: tauriFetch as any,
       ...chatPayload,
       async onopen(res) {
-        clearTimeout(requestTimeoutId);
+        clearConnectionTimeout();
         const contentType = res.headers.get("content-type");
         console.log("[Request] response content type: ", contentType);
         responseRes = res;
@@ -647,19 +663,35 @@ export function streamWithThink(
               remainText += chunk.content;
             }
           }
+          if (chunk.contentAfterThinking) {
+            remainText += "\n\n" + chunk.contentAfterThinking;
+            isInThinkingMode = false;
+            lastIsThinking = false;
+          }
         } catch (e) {
           console.error("[Request] parse error", text, msg, e);
           // Don't throw error for parse failures, just log them
         }
       },
       onclose() {
+        clearConnectionTimeout();
         finish();
       },
       onerror(e) {
+        clearConnectionTimeout();
+        requestFailed = true;
+        finished = true;
         options?.onError?.(e);
         throw e;
       },
       openWhenHidden: true,
+    }).catch((error) => {
+      clearConnectionTimeout();
+      if (!finished) {
+        requestFailed = true;
+        finished = true;
+        options?.onError?.(error);
+      }
     });
   }
   console.debug("[ChatAPI] start");

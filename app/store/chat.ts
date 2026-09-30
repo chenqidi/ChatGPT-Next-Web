@@ -9,6 +9,7 @@ import { indexedDBStorage } from "@/app/utils/indexedDB-storage";
 import { nanoid } from "nanoid";
 import type {
   ClientApi,
+  ChatCompletionMessage,
   MultimodalContent,
   RequestMessage,
 } from "../client/api";
@@ -61,6 +62,7 @@ export type ChatMessage = RequestMessage & {
   id: string;
   model?: ModelType;
   tools?: ChatMessageTool[];
+  apiMessages?: ChatCompletionMessage[];
   audio_url?: string;
   isMcpResponse?: boolean;
 };
@@ -144,8 +146,24 @@ function getSummarizeModel(
   }
   if (currentModel.startsWith("gemini")) {
     return [GEMINI_SUMMARIZE_MODEL, ServiceProvider.Google];
-  } else if (currentModel.startsWith("deepseek-")) {
-    return [DEEPSEEK_SUMMARIZE_MODEL, ServiceProvider.DeepSeek];
+  } else if (providerName === ServiceProvider.DeepSeek) {
+    const configStore = useAppConfig.getState();
+    const accessStore = useAccessStore.getState();
+    const models = collectModelsWithDefaultModel(
+      configStore.models,
+      [configStore.customModels, accessStore.customModels].join(","),
+      accessStore.defaultModel,
+    );
+    if (
+      models.some(
+        (m) =>
+          m.name === DEEPSEEK_SUMMARIZE_MODEL &&
+          m.provider?.id === "deepseek" &&
+          m.available,
+      )
+    ) {
+      return [DEEPSEEK_SUMMARIZE_MODEL, providerName];
+    }
   }
 
   return [currentModel, providerName];
@@ -470,8 +488,9 @@ export const useChatStore = createPersistStore(
               session.messages = session.messages.concat();
             });
           },
-          async onFinish(message) {
+          async onFinish(message, _response, apiMessages) {
             botMessage.streaming = false;
+            if (apiMessages) botMessage.apiMessages = apiMessages;
             if (message) {
               botMessage.content = message;
               botMessage.date = new Date().toLocaleString();
@@ -780,12 +799,18 @@ export const useChatStore = createPersistStore(
             onUpdate(message) {
               session.memoryPrompt = message;
             },
-            onFinish(message, responseRes) {
+            onFinish(message, responseRes, apiMessages) {
               if (responseRes?.status === 200) {
-                console.log("[Memory] ", message);
+                const finalMessage = apiMessages?.at(-1);
+                const summary = finalMessage
+                  ? getMessageTextContent({
+                      role: "assistant",
+                      content: finalMessage.content,
+                    })
+                  : message;
                 get().updateTargetSession(session, (session) => {
                   session.lastSummarizeIndex = lastSummarizeIndex;
-                  session.memoryPrompt = message; // Update the memory prompt for stored it in local storage
+                  session.memoryPrompt = summary;
                 });
               }
             },
@@ -860,7 +885,7 @@ export const useChatStore = createPersistStore(
   },
   {
     name: StoreKey.Chat,
-    version: 3.3,
+    version: 3.4,
     migrate(persistedState, version) {
       const state = persistedState as any;
       const newState = JSON.parse(
